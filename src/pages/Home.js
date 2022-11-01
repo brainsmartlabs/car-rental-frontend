@@ -1,8 +1,16 @@
-import React from 'react'
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllCars } from '../redux/actions/carsAction';
 
 function Home() {
-  const { cars } = useSelector(state => state.carsReducer)
+  const { cars } = useSelector(state => state.carsReducer);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllCars());
+  }, []);
+
+
   return (
     <div>
       <h1>Home</h1>
