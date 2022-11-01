@@ -1,20 +1,42 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
-import { getAllCars } from '../redux/actions/carsAction';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import CarPreview from '../components/CarPreview';
+
 
 function Home() {
-  const { cars } = useSelector(state => state.carsReducer);
-  const dispatch = useDispatch();
+
+  const [cars, setCars] = useState();
+
+  async function sendRequest() {
+    let res = await axios.get('http://localhost:3300/api/cars/')
+      .catch(err => console.log(err));
+    let data = await res.data;
+    return data
+  }
 
   useEffect(() => {
-    dispatch(getAllCars());
+    sendRequest().then(data => {
+      setCars(data.cars);
+    });
   }, []);
 
 
   return (
-    <div>
-      <h1>Home</h1>
-      <h1>The length of cars array is {cars.length}</h1>
+    <div className="container">
+      <div className="cars-container">
+        {(cars) && cars.map((car, index) => {
+          return (<CarPreview
+            className="car-item"
+            key={index}
+            carID={car._id}
+            carName={car.name}
+            image={car.image}
+            rentPerHour={car.rentPerHour}
+            fuelType={car.fuelType}
+            capacity={car.capacity}
+          />);
+        })}
+      </div>
     </div>
   )
 }

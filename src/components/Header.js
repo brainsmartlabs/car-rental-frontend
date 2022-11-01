@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 function Header() {
     const [value, setValue] = useState();
     return (
-        <AppBar position='sticky' elevation={20}>
+        <AppBar position='sticky' elevation={20} color="primary">
             <Toolbar>
                 <Typography variant='h3'>Car Rental</Typography>
                 <Box sx={{ marginLeft: "auto" }}>
