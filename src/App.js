@@ -2,6 +2,10 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import React from 'react';
 import Header from './components/Header';
+import Home from './pages/Home.js';
+import Login from './pages/Login.js';
+import Register from './pages/Register.js';
+import BookingCar from './pages/BookingCar.js';
 
 
 function App() {
@@ -12,10 +16,10 @@ function App() {
       </header>
       <main className='main'>
         <Routes>
-          <Route path="/"  />
-          <Route path="/login"  />
-          <Route path="/register"  />
-          <Route path="/car"  />
+          <Route path="/"  element={<Home/>}/>
+          <Route path="/login"  element={<Login />}/>
+          <Route path="/register" element={<Register />} />
+          <Route path="/bookingCar" element={<BookingCar />} />
         </Routes>
       </main>
       <footer className='footer'>

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { AppBar, Box, Tab, Tabs, Toolbar, Typography } from '@mui/material';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 function Header() {
     const [value, setValue] = useState();
     return (
-        <AppBar position='sticky'>
+        <AppBar position='sticky' elevation={20}>
             <Toolbar>
                 <Typography variant='h3'>Car Rental</Typography>
                 <Box sx={{ marginLeft: "auto" }}>

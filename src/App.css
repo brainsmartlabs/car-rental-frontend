@@ -1,0 +1,11 @@
+#root{
+    height: 120vh;
+}
+
+body{
+    background: linear-gradient(#d3ebff, #fff0d3);
+    height: 120vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
