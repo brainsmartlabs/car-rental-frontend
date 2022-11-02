@@ -10,7 +10,7 @@ import { Box } from '@mui/system';
 
 function CarPreview(props) {
     return (
-        <Card sx={{ maxWidth: 800, boxShadow: 3 }} >
+        <Card sx={{ boxShadow: 10 }} >
             <CardMedia
                 component="img"
                 height="240"
