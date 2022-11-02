@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
@@ -9,12 +9,13 @@ function Auth(props) {
   const [inputs, setInputs] = useState({
     name: "",
     email: "",
-    password: ""
+    password: "",
+    profile: "",
   });
 
   function resetState() {
     props.setIsSignUp(!props.isSignUp);
-    setInputs({ name: '', email: '', password: '' });
+    setInputs({ name: '', email: '', password: '', profile: '' });
   }
 
   function handleChange(e) {
@@ -53,6 +54,8 @@ function Auth(props) {
           {props.isSignUp &&
             <TextField
               margin='normal'
+              fullWidth
+              required
               name='name'
               type={'text'}
               variant='outlined'
@@ -63,6 +66,8 @@ function Auth(props) {
 
           <TextField
             margin='normal'
+            fullWidth
+            required
             name='email'
             type={'email'}
             variant='outlined'
@@ -73,6 +78,8 @@ function Auth(props) {
 
           <TextField
             margin='normal'
+            required
+            fullWidth
             name='password'
             type={'password'}
             variant='outlined'
@@ -80,6 +87,25 @@ function Auth(props) {
             value={inputs.password}
             onChange={handleChange}
           />
+          {props.isSignUp &&
+            <FormControl id="profile" margin='normal' fullWidth required>
+              <InputLabel>I am an</InputLabel>
+              <Select
+                name="profile"
+                id="profile-select"
+                labelId="profile"
+                label="I am an"
+                onChange={handleChange}
+                value={inputs.profile}
+              >
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value={"admin"}>Admin</MenuItem>
+                <MenuItem value={"owner"}>Owner</MenuItem>
+                <MenuItem value={"customer"}>Customer</MenuItem>
+              </Select>
+              <FormHelperText>Choose A Role</FormHelperText>
+            </FormControl>
+          }
 
           <Button
             endIcon={props.isSignUp ? <HowToRegOutlinedIcon /> : <LoginOutlinedIcon />}
