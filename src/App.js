@@ -6,6 +6,7 @@ import Home from './pages/Home.js';
 import Auth from './pages/Auth.js';
 import Register from './pages/Register.js';
 import BookingCar from './pages/BookingCar.js';
+import Welcome from './pages/Welcome';
 
 function App() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -20,6 +21,7 @@ function App() {
           <Route path="/auth" element={<Auth isSignUp={isSignUp} setIsSignUp={setIsSignUp} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/bookingCar" element={<BookingCar />} />
+          <Route path="/getUser" element={<Welcome />} />
         </Routes>
       </main>
       <footer className='footer'>
