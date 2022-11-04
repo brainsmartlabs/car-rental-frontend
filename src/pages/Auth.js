@@ -84,23 +84,25 @@ function Auth(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(errorState); //Debug
+    let formHasError = false;
 
     if (props.isSignUp) {
       if (inputs.name === '') dispatchErrorState({ type: 'NAME' });
       if (inputs.email === '') dispatchErrorState({ type: 'EMAIL' });
       if (inputs.password === '') dispatchErrorState({ type: 'PASSWORD' });
       if (inputs.profile === '') dispatchErrorState({ type: 'PROFILE' });
+
+      if (inputs.name === '' || inputs.email === '' ||
+        inputs.password === '' || inputs.profile === '') formHasError = true;
     }
     else {
       if (inputs.email === '') dispatchErrorState({ type: 'EMAIL' });
       if (inputs.password === '') dispatchErrorState({ type: 'PASSWORD' });
+
+      if (inputs.email === '' || inputs.password === '') formHasError = true;
     }
 
-    console.log(errorState); //Debug
-    
-    if (!errorState.name && !errorState.email && !errorState.password && !errorState.profile) {
-      console.log("Condition validated & Request is sending");
+    if (formHasError === false) {
       sendRequest().then((data) => {
         if (props.isSignUp) {
           if (data.status === 'not-allow') navigate('/getUser');
@@ -109,8 +111,6 @@ function Auth(props) {
           if (data.status === 'allow') navigate('/getUser');
         }
       });
-    } else {
-      console.log("Request Not Sent");
     }
 
   }
@@ -147,6 +147,7 @@ function Auth(props) {
               value={inputs.name}
               onChange={handleChange}
               error={errorState.name}
+              helperText={errorState.name ? 'Enter a valid Username' : ' '}
             />}
 
           <TextField
@@ -159,6 +160,7 @@ function Auth(props) {
             value={inputs.email}
             onChange={handleChange}
             error={errorState.email}
+            helperText={errorState.email ? 'Enter a valid Email ID' : ' '}
           />
 
           <TextField
@@ -171,6 +173,7 @@ function Auth(props) {
             value={inputs.password}
             onChange={handleChange}
             error={errorState.password}
+            helperText={errorState.password ? 'Enter a valid Password' : ' '}
           />
           {props.isSignUp &&
             <FormControl id="profile" margin='normal' fullWidth error={errorState.profile}>
@@ -187,7 +190,9 @@ function Auth(props) {
                 <MenuItem value={"owner"}>Owner</MenuItem>
                 <MenuItem value={"customer"}>Customer</MenuItem>
               </Select>
-              <FormHelperText>Choose a Suitable Role</FormHelperText>
+              <FormHelperText>
+                {errorState.profile ? 'Select a valid Profile' : 'Choose a Suitable Profile'}
+              </FormHelperText>
             </FormControl>
           }
 
