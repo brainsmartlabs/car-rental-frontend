@@ -42,10 +42,15 @@ function Auth(props) {
     profile: false
   });
 
+  const [errEmailMessage, setErrEmailMessage] = useState('');
+  const [errPasswordMessage, setErrPasswordMessage] = useState('');
+  const [accountCreationStatus, setAccountCreationStatus] = useState(false);
+
   function resetState() {
     props.setIsSignUp(!props.isSignUp);
     setInputs({ name: '', email: '', password: '', profile: '' });
     dispatchErrorState({ type: 'RESET' });
+    setAccountCreationStatus(false);
   }
 
   function handleChange(e) {
@@ -58,28 +63,49 @@ function Auth(props) {
   }
 
   async function sendRequest() {
+
     if (props.isSignUp) {
       const res = await axios.post('http://localhost:3300/api/user/signup', {
         name: inputs.name,
         email: inputs.email,
         password: inputs.password,
         profile: inputs.profile
-      }).catch(err => console.log(err));
+      }).catch((err) => {
+        let errData = err.response.data;
+        errData.errStatus = err.response.status;
+        errData.hasAnError = true;
+        return errData;
+      });
 
-      let data = await res.data;
+      let data;
+      if (!res.hasAnError) {
+        data = await res.data;
+        data.resStatus = await res.status;
+      } else if (res.hasAnError) {
+        data = res;
+      }
       return data;
     }
-
     else {
       const res = await axios.post('http://localhost:3300/api/user/login', {
         email: inputs.email,
         password: inputs.password
-      }).catch(err => console.log(err));
+      }).catch((err) => {
+        let errData = err.response.data;
+        errData.errStatus = err.response.status;
+        errData.hasAnError = true;
+        return errData;
+      });
 
-      let data = await res.data;
+      let data;
+      if (!res.hasAnError) {
+        data = await res.data;
+        data.resStatus = await res.status;
+      } else if (res.hasAnError) {
+        data = res;
+      }
       return data;
     }
-
   }
 
   function handleSubmit(e) {
@@ -88,8 +114,14 @@ function Auth(props) {
 
     if (props.isSignUp) {
       if (inputs.name === '') dispatchErrorState({ type: 'NAME' });
-      if (inputs.email === '') dispatchErrorState({ type: 'EMAIL' });
-      if (inputs.password === '') dispatchErrorState({ type: 'PASSWORD' });
+      if (inputs.email === '') {
+        dispatchErrorState({ type: 'EMAIL' });
+        setErrEmailMessage('Enter a Valid Email ID');
+      }
+      if (inputs.password === '' || inputs.password.length < 6) {
+        dispatchErrorState({ type: 'PASSWORD' });
+        setErrPasswordMessage('Enter a Valid Password of Minimum 6 charecters');
+      }
       if (inputs.profile === '') dispatchErrorState({ type: 'PROFILE' });
 
       if (inputs.name === '' || inputs.email === '' ||
@@ -105,10 +137,38 @@ function Auth(props) {
     if (formHasError === false) {
       sendRequest().then((data) => {
         if (props.isSignUp) {
-          if (data.status === 'not-allow') navigate('/getUser');
+          if (data.hasOwnProperty('resStatus') && (data.resStatus === 200) && (data.email === 'true')) {
+            props.setIsSignUp(false);
+            setAccountCreationStatus(true);
+            navigate('/auth');
+          }
+          else if (data.hasOwnProperty('errStatus') && (data.errStatus === 400) && (data.email === 'false')) {
+            dispatchErrorState({ type: 'EMAIL' });
+            setErrEmailMessage(`${data.message}`)
+          }
         }
         else {
-          if (data.status === 'allow') navigate('/getUser');
+          if (data.hasOwnProperty('resStatus')
+            && (data.resStatus === 200)
+            && (data.email === 'true')
+            && (data.password === 'true')) {
+            setAccountCreationStatus(false);
+            navigate('/getUser');
+          }
+          else if (data.hasOwnProperty('errStatus')
+            && (data.errStatus === 400)
+            && (data.email === 'false')
+            && (data.password === 'false')) {
+            dispatchErrorState({ type: 'EMAIL' });
+            setErrEmailMessage(`${data.message}`)
+          }
+          else if (data.hasOwnProperty('errStatus')
+            && (data.errStatus === 400)
+            && (data.email === 'true')
+            && (data.password === 'false')) {
+            dispatchErrorState({ type: 'PASSWORD' });
+            setErrPasswordMessage(`${data.message}`)
+          }
         }
       });
     }
@@ -117,6 +177,10 @@ function Auth(props) {
 
   return (
     <div>
+      {(accountCreationStatus) && <Typography
+        variant='h5'
+        padding={3}
+        textAlign={'center'}> Account Created Sucessfully. Please Login!!! </Typography>}
       <form onSubmit={handleSubmit}>
         <Box
           display="flex"
@@ -160,7 +224,7 @@ function Auth(props) {
             value={inputs.email}
             onChange={handleChange}
             error={errorState.email}
-            helperText={errorState.email ? 'Enter a valid Email ID' : ' '}
+            helperText={errorState.email ? errEmailMessage : ' '}
           />
 
           <TextField
@@ -173,7 +237,7 @@ function Auth(props) {
             value={inputs.password}
             onChange={handleChange}
             error={errorState.password}
-            helperText={errorState.password ? 'Enter a valid Password' : ' '}
+            helperText={errorState.password ? errPasswordMessage : ' '}
           />
           {props.isSignUp &&
             <FormControl id="profile" margin='normal' fullWidth error={errorState.profile}>
@@ -215,6 +279,7 @@ function Auth(props) {
           </Button>
         </Box>
       </form>
+
       <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
     </div>
   )
