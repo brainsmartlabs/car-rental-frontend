@@ -23,8 +23,6 @@ const errorReducer = (state, action) => {
   }
 };
 
-
-
 function Auth(props) {
   const navigate = useNavigate();
 
@@ -104,6 +102,7 @@ function Auth(props) {
       } else if (res.hasAnError) {
         data = res;
       }
+
       return data;
     }
   }
@@ -153,7 +152,7 @@ function Auth(props) {
             && (data.email === 'true')
             && (data.password === 'true')) {
             setAccountCreationStatus(false);
-            navigate('/getUser');
+            navigate('/');
           }
           else if (data.hasOwnProperty('errStatus')
             && (data.errStatus === 400)
