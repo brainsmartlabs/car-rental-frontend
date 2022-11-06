@@ -60,13 +60,14 @@ function App() {
         type: 'USER_FETCH_SUCCESS',
         payload: data.user
       });
-      if(!user.isError) setIsLoggedIn(true);
       console.log(user);//Debug Statement
     }).catch((err) => {
       console.log('Catch Woking'); //Debug
       dispatchUser({ type: 'USER_FETCH_FAILURE' });
       console.log(user);//Debug Satement
     });
+
+    if(!user.isError) setIsLoggedIn(true);
 
   }, []);
 

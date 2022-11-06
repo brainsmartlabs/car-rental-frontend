@@ -36,7 +36,6 @@ function Home() {
     return data
   }
 
-
   useEffect(() => {
 
     //Initial Stage: On Page Load
