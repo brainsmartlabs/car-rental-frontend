@@ -11,7 +11,7 @@ function Header(props) {
     const navigate = useNavigate();
 
     async function handleLogout() {
-        const res = await axios.post("http://localhost:3300/api/user/logout", null, {
+        const res = await axios.get("http://localhost:3300/api/user/logout", null, {
             withCredentials: true
         });
 
@@ -22,11 +22,12 @@ function Header(props) {
         }
     }
 
+
     return (
         <AppBar position='sticky' elevation={20} color="primary">
             <Toolbar >
                 <Typography variant='h3'>Car Rental</Typography>
-                {(props.user.token) &&
+                {(props.isLoggedIn === true && props.user.token === true) &&
                     <Typography variant='h6'>
                         {props.user.data.profile} | {props.user.data.name} | Balance: {props.user.data.wallet}
                     </Typography>
@@ -43,8 +44,8 @@ function Header(props) {
                         </Tabs>
                     </Box>
                 }
-                {
-                    (props.isLoggedIn) &&
+
+                {(props.isLoggedIn) &&
                     <Box sx={{ marginLeft: "auto" }}>
                         <Tabs
                             value={0}

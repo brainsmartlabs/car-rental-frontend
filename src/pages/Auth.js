@@ -1,10 +1,9 @@
 import { Box, Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { useState, useReducer } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 
 const errorReducer = (state, action) => {
   switch (action.type) {
@@ -43,6 +42,7 @@ function Auth(props) {
   const [errEmailMessage, setErrEmailMessage] = useState('');
   const [errPasswordMessage, setErrPasswordMessage] = useState('');
   const [accountCreationStatus, setAccountCreationStatus] = useState(false);
+
 
   function resetState() {
     props.setIsSignUp(!props.isSignUp);
@@ -152,6 +152,7 @@ function Auth(props) {
             && (data.email === 'true')
             && (data.password === 'true')) {
             setAccountCreationStatus(false);
+            props.setIsLoggedIn(true);
             navigate('/');
           }
           else if (data.hasOwnProperty('errStatus')
@@ -173,6 +174,7 @@ function Auth(props) {
     }
 
   }
+
 
   return (
     <div>

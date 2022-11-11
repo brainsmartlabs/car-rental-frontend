@@ -14,7 +14,7 @@ axios.defaults.withCredentials = true;
 const userReducer = (state, action) => {
   switch (action.type) {
     case 'USER_FETCH_INIT':
-      return { ...state, isLoading: true, isError: false, token: false };
+      return { ...state, isLoading: true, isError: false, token: false, data: {} };
     case 'USER_FETCH_SUCCESS':
       return { ...state, isLoading: false, isError: false, token: true, data: action.payload };
     case 'USER_FETCH_FAILURE':
@@ -35,6 +35,8 @@ function App() {
     token: false,
   });
 
+  console.log('Token exisits & has the user loaded? ' + user.token);
+  console.log('Login Status ' + isLoggedIn);
 
   async function sendUserRequest() {
     const res = await axios.get('http://localhost:3300/api/user/user', {
@@ -60,15 +62,18 @@ function App() {
         type: 'USER_FETCH_SUCCESS',
         payload: data.user
       });
-      console.log(user);//Debug Statement
+      setIsLoggedIn(true);
     }).catch((err) => {
-      console.log('Catch Woking'); //Debug
       dispatchUser({ type: 'USER_FETCH_FAILURE' });
-      console.log(user);//Debug Satement
+      setIsLoggedIn(false);
     });
 
-    if(!user.isError) setIsLoggedIn(true);
+  }, []);
 
+  useEffect(() => {
+    console.log("Second Use Effect");
+    if (user.token === true) setIsLoggedIn(true);
+    if (user.token === false) setIsLoggedIn(false);
   }, []);
 
   return (
@@ -89,11 +94,12 @@ function App() {
           <Route path="/auth" element={<Auth
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
-            isLoggedIn={isLoggedIn} />} />
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={setIsLoggedIn} />} />
 
           <Route path="/register" element={<Register />} />
-          <Route path="/bookingCar" element={<BookingCar />} />
-          <Route path="/getUser" element={<Welcome isLoggedIn={isLoggedIn}/>} />
+          <Route path="/booking/:id" element={<BookingCar />} />
+          <Route path="/getUser" element={<Welcome isLoggedIn={isLoggedIn} />} />
         </Routes>
       </main>
       <footer className='footer'>

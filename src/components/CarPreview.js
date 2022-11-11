@@ -1,5 +1,5 @@
 import React from 'react';
-//import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -27,7 +27,7 @@ function CarPreview(props) {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button variant='contained' color="info" size="large">Book Now</Button>
+                    <Button to={`/booking/${props.carID}`} LinkComponent={Link} variant='contained' color="info" size="large">Book Now</Button>
                 </CardActions>
             </Box>
         </Card>
