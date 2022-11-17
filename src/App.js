@@ -14,11 +14,11 @@ axios.defaults.withCredentials = true;
 const userReducer = (state, action) => {
   switch (action.type) {
     case 'USER_FETCH_INIT':
-      return { ...state, isLoading: true, isError: false, token: false, data: {} };
+      return { ...state, isLoading: true, isError: false };
     case 'USER_FETCH_SUCCESS':
-      return { ...state, isLoading: false, isError: false, token: true, data: action.payload };
+      return { ...state, isLoading: false, isError: false, data: action.payload };
     case 'USER_FETCH_FAILURE':
-      return { ...state, isLoading: false, isError: true, token: false };
+      return { ...state, isLoading: false, isError: true };
     default:
       throw new Error();
   }
@@ -26,17 +26,15 @@ const userReducer = (state, action) => {
 
 function App() {
   const [isSignUp, setIsSignUp] = useState(false);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isToken, setIsToken] = useState(false);
 
   const [user, dispatchUser] = useReducer(userReducer, {
     data: {},
     isLoading: false,
     isError: false,
-    token: false,
   });
-
-  console.log('Token exisits & has the user loaded? ' + user.token);
-  console.log('Login Status ' + isLoggedIn);
 
   async function sendUserRequest() {
     const res = await axios.get('http://localhost:3300/api/user/user', {
@@ -50,11 +48,26 @@ function App() {
     return data;
   }
 
+  //Getting local Storage
+  useEffect(() => {
+    let loggedInState = window.localStorage.getItem("isLoggedIn");
+    if (typeof loggedInState != 'undefined' && loggedInState !== null)
+      setIsLoggedIn(loggedInState);
+
+    let tokenState = window.localStorage.getItem("isToken");
+    if (typeof tokenState !== 'undefined' && tokenState !== null)
+      setIsToken(tokenState);
+  }, []);
+
+  //Setting local Storage
+  useEffect(() => {
+    window.localStorage.setItem("isLoggedIn", isLoggedIn);
+    window.localStorage.setItem("isToken", isToken);
+  }, [isLoggedIn, isToken])
 
   useEffect(() => {
     //Initial Stage: On Page Load
     dispatchUser({ type: 'USER_FETCH_INIT' });
-    setIsLoggedIn(false);
 
     //Sending User Request: 
     sendUserRequest().then(data => {
@@ -62,19 +75,15 @@ function App() {
         type: 'USER_FETCH_SUCCESS',
         payload: data.user
       });
-      setIsLoggedIn(true);
+      setIsToken(true);
     }).catch((err) => {
       dispatchUser({ type: 'USER_FETCH_FAILURE' });
+      setIsToken(false);
       setIsLoggedIn(false);
     });
 
-  }, []);
+  }, [isLoggedIn, isToken]);
 
-  useEffect(() => {
-    console.log("Second Use Effect");
-    if (user.token === true) setIsLoggedIn(true);
-    if (user.token === false) setIsLoggedIn(false);
-  }, []);
 
   return (
     <React.Fragment>
@@ -84,13 +93,14 @@ function App() {
           setIsSignUp={setIsSignUp}
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
+          isToken={isToken}
+          setIsToken={setIsToken}
           user={user}
         />
       </header>
       <main className='main'>
         <Routes>
-          <Route path="/" element={<Home />}
-            isLoggedIn={isLoggedIn} />
+          <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}

@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import { useState, useReducer, useEffect } from 'react';
+import { useState, useReducer } from 'react';
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
 import axios from 'axios';

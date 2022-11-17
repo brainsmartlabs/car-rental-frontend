@@ -3,6 +3,11 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
+import DateRangePickerComp from '../components/DateRangePickerComp.js';
+
+
 
 const carReducer = (state, action) => {
   switch (action.type) {
@@ -22,6 +27,7 @@ function BookingCar(props) {
 
   const carID = useParams().id;
 
+
   const [car, dispatchCar] = useReducer(carReducer, {
     data: {},
     isLoading: false,
@@ -29,6 +35,10 @@ function BookingCar(props) {
   });
 
   const [errMessage, setErrMessage] = useState('');
+
+  const [dateRange, setDateRange] = useState([null, null]);
+  console.log(dateRange[0]);
+
 
   async function sendCarRequest() {
     const res = await axios.get(`http://localhost:3300/api/cars/${carID}`, {
@@ -70,7 +80,8 @@ function BookingCar(props) {
       }
     });
 
-  }, [])
+  }, []);
+
 
   return (
     <div>
@@ -80,15 +91,27 @@ function BookingCar(props) {
         < h1 > {errMessage}</h1>
       }
       {(car.isLoading) ? <CircularProgress /> :
-        <Grid container spacing={10} sx={{'margin' : '25px'}}>
-          
-          <Grid item md={6} xs={12}>
-            <img src={car.data.image} height='300vh' width='500vw' />
+        <Grid container spacing={2} sx={{ 'margin': '25px' }}>
+
+          <Grid item md={6} xs={12} >
+            <img src={car.data.image} className="car-image" />
           </Grid>
-          <Grid item md={6} xs={12}>
-            <h1>{car.data.name} </h1>
-            <h1>{car.data.rentPerHour}</h1>
-            <h2>{car.data.fuelType}</h2>
+          <Grid item md={6} xs={12} >
+            <Divider> <Chip label="Car Info" /></Divider>
+            <div className='text-right'>
+              <p>{car.data.name} </p>
+              <p>{car.data.rentPerHour} Rent Per Hour /-</p>
+              <p>Fuel: {car.data.fuelType}</p>
+              <p>Max Persons: {car.data.capacity}</p>
+            </div>
+            <Divider> <Chip label="Select TIme Slots" /></Divider>
+            <br />
+            <div className='text-right'>
+              <DateRangePickerComp
+                dateRange={dateRange}
+                setDateRange={setDateRange}
+              />
+            </div>
           </Grid>
         </Grid>
       }
