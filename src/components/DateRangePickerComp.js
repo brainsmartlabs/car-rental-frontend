@@ -16,7 +16,9 @@ function DateRangePickerComp(props) {
         >
             <DateRangePicker
                 value={props.dateRange}
-                onChange={newValue => props.setDateRange(newValue)}
+                onChange={newValue => {
+                    props.setDateRange(newValue);
+                }}
                 renderInput={(startProps, endProps) => (
                     <React.Fragment>
                         <TextField {...startProps} />

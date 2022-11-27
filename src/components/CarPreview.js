@@ -27,7 +27,12 @@ function CarPreview(props) {
                     </Typography>
                 </CardContent>
                 <CardActions>
-                    <Button to={`/booking/${props.carID}`} LinkComponent={Link} variant='contained' color="info" size="large">Book Now</Button>
+                    <Button
+                        to={(props.isLoggedIn) ? `/booking/${props.carID}` : '/auth'}
+                        LinkComponent={Link}
+                        variant='contained'
+                        color="info"
+                        size="large">Book Now</Button>
                 </CardActions>
             </Box>
         </Card>

@@ -9,8 +9,6 @@ axios.defaults.withCredentials = true;
 
 function Header(props) {
     const navigate = useNavigate();
-    console.log('Inside Props Login & Token: ' + props.isLoggedIn + ' ' + props.isToken);
-    console.log(props.user);
 
     async function handleLogout() {
         const res = await axios.get("http://localhost:3300/api/user/logout", null, {
@@ -29,11 +27,11 @@ function Header(props) {
         <AppBar position='sticky' elevation={20} color="primary">
             <Toolbar >
                 <Typography variant='h3'>Car Rental</Typography>
-                {/*(props.isLoggedIn === true && props.isToken) &&*/}
+                {
                     <Typography variant='h6'>
-                        {props.isLoggedIn}|{props.isToken} | {props.user.data.profile} | {props.user.data.name} | Balance: {props.user.data.wallet}
+                        {props.isLoggedIn && props.isToken ? props.user.data.profile + "|" + props.user.data.name + " Balance: " + props.user.data.wallet : "something"}
                     </Typography>
-                
+                }
                 {(!props.isLoggedIn) &&
                     <Box sx={{ marginLeft: "auto" }}>
                         <Tabs
