@@ -89,17 +89,17 @@ function Home(props) {
         temp.push(car);
       }
       else {
+        let isOverlap = false;
         for (let booking of car.bookedTimeSlots) {
           let a_start = convertToDate(selectedFrom);
           let a_end = convertToDate(selectedTo);
           let b_start = convertToDate(booking.from);
           let b_end = convertToDate(booking.to);
 
-          let isOverlap = dateRangeOverlaps(a_start, a_end, b_start, b_end);
-          console.log("is Overlap : " + isOverlap);
-          if (!isOverlap) temp.push(car);
+          let checkOverlap = dateRangeOverlaps(a_start, a_end, b_start, b_end);
+          if (checkOverlap) isOverlap = true;
         }
-
+        if(!isOverlap) temp.push(car);
       }
     }
     console.log(temp);
