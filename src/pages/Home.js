@@ -102,7 +102,6 @@ function Home(props) {
         if(!isOverlap) temp.push(car);
       }
     }
-    console.log(temp);
     setTotalCars({ data: temp, isLoading: false, isError: false });
   }
 
