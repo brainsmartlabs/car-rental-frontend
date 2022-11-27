@@ -7,7 +7,19 @@ import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import DateRangePickerComp from '../components/DateRangePickerComp.js';
 
+function dateRangeOverlaps(a_start, a_end, b_start, b_end) {
+  if (a_start <= b_start && b_start <= a_end) return true; // b starts in a
+  if (a_start <= b_end && b_end <= a_end) return true; // b ends in a
+  if (b_start < a_start && a_end < b_end) return true; // a in b
+  return false;
+}
 
+function convertToDate(dateString) {
+  let dateArray = dateString.split('/');
+  let strReConstruct = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
+
+  return new Date(strReConstruct);
+}
 
 const carReducer = (state, action) => {
   switch (action.type) {
@@ -43,6 +55,7 @@ function BookingCar(props) {
   const [totalDays, setTotalDays] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [driver, setDriver] = useState(false);
+  const [dateOverlap, setDateOverlap] = useState(false);
 
   useEffect(() => {
     (dateRange[0] && dateRange[1]) ?
@@ -111,18 +124,20 @@ function BookingCar(props) {
   }
 
   async function bookNow() {
-    setErrMessage('');
-    sendBookingRequest().then((data) => {
-      if (data.hasOwnProperty('resStatus') && (data.resStatus === 200)) {
-        navigate('/');
-      }
-      else if (data.hasOwnProperty('errStatus') && (data.errStatus === 400)) {
-        setErrMessage(`${data.message}`)
-      }
-      else if (data.hasOwnProperty('errStatus') && (data.errStatus === 500)) {
-        setErrMessage(`${data.message}`)
-      }
-    })
+    if (!dateOverlap) {
+      setErrMessage('');
+      sendBookingRequest().then((data) => {
+        if (data.hasOwnProperty('resStatus') && (data.resStatus === 200)) {
+          navigate('/');
+        }
+        else if (data.hasOwnProperty('errStatus') && (data.errStatus === 400)) {
+          setErrMessage(`${data.message}`)
+        }
+        else if (data.hasOwnProperty('errStatus') && (data.errStatus === 500)) {
+          setErrMessage(`${data.message}`)
+        }
+      })
+    }
 
   }
 
@@ -149,15 +164,37 @@ function BookingCar(props) {
 
   }, []);
 
+  function checkDates() {
+    setDateOverlap(false);
+    setErrMessage('');
+    let selectedFrom = dateRange[0].format('DD/MM/YYYY');
+    let selectedTo = dateRange[1].format('DD/MM/YYYY');
+
+    let isOverlap = false;
+    for (let booking of car.data.bookedTimeSlots) {
+      let a_start = convertToDate(selectedFrom);
+      let a_end = convertToDate(selectedTo);
+      let b_start = convertToDate(booking.from);
+      let b_end = convertToDate(booking.to);
+
+      let checkOverlap = dateRangeOverlaps(a_start, a_end, b_start, b_end);
+      if (checkOverlap) isOverlap = true;
+    }
+    if (isOverlap) setErrMessage('***Dates overlaping. Please Choose Other Dates');
+    if (isOverlap) setDateOverlap(true);
+  }
+
+  useEffect(() => {
+    (dateRange[0] && dateRange[1]) && checkDates();
+  }, [dateRange]);
+
 
   return (
     <div>
-      <h1>Booking Car</h1>
-      < h1 > Car ID: {carID}</h1>
       {(car.isError) &&
         < h1 > {errMessage}</h1>
       }
-      {(errMessage) && < h1 > {errMessage}</h1>}
+
       {(car.isLoading) ? <CircularProgress /> :
         <Grid container spacing={2} sx={{ 'margin': '25px' }}>
 
@@ -181,6 +218,10 @@ function BookingCar(props) {
               />
             </div>
             <br />
+            {(errMessage) &&
+              < p style={{ 'color': 'red', 'fontStyle': 'oblique', 'fontSize': '25px' }}> {errMessage}</p>
+            }
+            <br />
             {(dateRange[0] && dateRange[1]) &&
               <div className='text-right'>
                 Total Days Selected : {totalDays}
@@ -193,11 +234,13 @@ function BookingCar(props) {
                     (e.target.checked) ? setDriver(true) : setDriver(false);
                   }} />
                 <br /><br />
-                <Button
-                  variant='contained'
-                  color="info"
-                  size="large"
-                  onClick={bookNow}>Book Now</Button>
+                {(!dateOverlap) &&
+                  <Button
+                    variant='contained'
+                    color="info"
+                    size="large"
+                    onClick={bookNow}>Book Now</Button>
+                }
               </div>
             }
 
