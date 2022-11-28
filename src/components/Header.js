@@ -29,7 +29,7 @@ function Header(props) {
                 <Typography variant='h3'>Car Rental</Typography>
                 {
                     <Typography variant='h6'>
-                        {props.isLoggedIn && props.isToken ? props.user.data.profile + "|" + props.user.data.name + " Balance: " + props.user.data.wallet : "something"}
+                        {props.isLoggedIn && props.isToken ? '  ' + props.user.data.profile + " | " + props.user.data.name + " | Balance: " + props.user.data.wallet : "something"}
                     </Typography>
                 }
                 {(!props.isLoggedIn) &&

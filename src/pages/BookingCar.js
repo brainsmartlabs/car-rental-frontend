@@ -6,6 +6,11 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import DateRangePickerComp from '../components/DateRangePickerComp.js';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function dateRangeOverlaps(a_start, a_end, b_start, b_end) {
   if (a_start <= b_start && b_start <= a_end) return true; // b starts in a
@@ -56,6 +61,8 @@ function BookingCar(props) {
   const [totalAmount, setTotalAmount] = useState(0);
   const [driver, setDriver] = useState(false);
   const [dateOverlap, setDateOverlap] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [timeSlots, setTimeSlots] = useState(null);
 
   useEffect(() => {
     (dateRange[0] && dateRange[1]) ?
@@ -151,6 +158,8 @@ function BookingCar(props) {
           type: 'CAR_FETCH_SUCCESS',
           payload: data.car
         });
+
+        setTimeSlots(data.car.bookedTimeSlots.map(slot => `From: ${slot.from} - To: ${slot.to} | `))
       }
       else if (data.hasOwnProperty('errStatus') && (data.errStatus === 404) && (data.status === false)) {
         dispatchCar({ type: 'CAR_FETCH_FAILURE' });
@@ -189,6 +198,9 @@ function BookingCar(props) {
   }, [dateRange]);
 
 
+
+
+
   return (
     <div>
       {(car.isError) &&
@@ -209,9 +221,28 @@ function BookingCar(props) {
               <p>Fuel: {car.data.fuelType}</p>
               <p>Max Persons: {car.data.capacity}</p>
             </div>
+
             <Divider> <Chip label="Select TIme Slots" /></Divider>
             <br />
             <div className='text-right'>
+              <span>
+                <Button variant="outlined" onClick={() => { setOpen(true) }}> Check Dates </Button>
+                <Dialog open={open} onClose={() => { setOpen(false) }}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description">
+                  <DialogTitle id="alert-dialog-title">
+                    {"Prebooked Dates: "}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      {(timeSlots) ? timeSlots : 'No Time Slots'}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => { setOpen(false) }}> Ok </Button>
+                  </DialogActions>
+                </Dialog>
+              </span>
               <DateRangePickerComp
                 dateRange={dateRange}
                 setDateRange={setDateRange}
@@ -222,6 +253,8 @@ function BookingCar(props) {
               < p style={{ 'color': 'red', 'fontStyle': 'oblique', 'fontSize': '25px' }}> {errMessage}</p>
             }
             <br />
+
+
             {(dateRange[0] && dateRange[1]) &&
               <div className='text-right'>
                 Total Days Selected : {totalDays}
