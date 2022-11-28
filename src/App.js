@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useReducer, useState } from 'react';
 import Header from './components/Header';
@@ -8,6 +8,7 @@ import Auth from './pages/Auth.js';
 //import Register from './pages/Register.js';
 import BookingCar from './pages/BookingCar.js';
 import Welcome from './pages/Welcome';
+import UserBookings from './pages/UserBookings';
 
 axios.defaults.withCredentials = true;
 
@@ -100,15 +101,15 @@ function App() {
       </header>
       <main className='main'>
         <Routes>
-          <Route path="/" element={<Home isLoggedIn={isLoggedIn}/>} />
+          <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
           <Route path="/auth" element={<Auth
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
             isLoggedIn={isLoggedIn}
             setIsLoggedIn={setIsLoggedIn} />} />
-
-          <Route path="/booking/:id" element={<BookingCar user={user}/>} />
-          <Route path="/getUser" element={<Welcome isLoggedIn={isLoggedIn} />} />
+          <Route path="/booking/:id" element={<BookingCar user={user} />} />
+          <Route path="userBookings" element={<UserBookings user={user} />} />
+          <Route path="/getUser" element={<ProtectedRoute> <Welcome isLoggedIn={isLoggedIn} /></ProtectedRoute>} />
         </Routes>
       </main>
       <footer className='footer'>
@@ -119,3 +120,13 @@ function App() {
 }
 
 export default App;
+
+export function ProtectedRoute(props) {
+
+  let loginValue = localStorage.getItem("isLoggedIn");
+  //let loginValue = props.isLoggedIn;
+  console.log("Local Storage Login value : " + loginValue);
+
+  return (loginValue) ? <div>Protected Route</div> : <div>Login Please</div>
+}
+
